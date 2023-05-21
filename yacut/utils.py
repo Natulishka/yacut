@@ -13,7 +13,7 @@ def get_unique_short_id():
             return short
         
 def ckeck_url(url):
-    if len(url) > LEN_SHORT_ID:
+    if len(url) > 16:
         return False
     for char in url:
         if char not in string.ascii_letters + string.digits:
