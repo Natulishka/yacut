@@ -1,7 +1,7 @@
 from flask import jsonify, request
 
 from . import app, db
-from .error_handlers import InvalidAPIUsage
+from .error_handlers import InvalidAPIUsageError
 from .models import URLMap
 from .utils import ckeck_url, get_unique_short_id
 
@@ -10,9 +10,9 @@ from .utils import ckeck_url, get_unique_short_id
 def add_short_url():
     data = request.get_json()
     if not data:
-        raise InvalidAPIUsage('Отсутствует тело запроса')
+        raise InvalidAPIUsageError('Отсутствует тело запроса')
     if 'url' not in data:
-        raise InvalidAPIUsage('"url" является обязательным полем!')
+        raise InvalidAPIUsageError('"url" является обязательным полем!')
     if 'custom_id' not in data or data['custom_id'] == '' or data['custom_id'] is None:
         url = URLMap.query.filter_by(original=data['url']).order_by(URLMap.timestamp.desc()).first()
         if url:
@@ -20,9 +20,9 @@ def add_short_url():
         data['custom_id'] = get_unique_short_id()
     else:
         if not ckeck_url(data['custom_id']):
-            raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
+            raise InvalidAPIUsageError('Указано недопустимое имя для короткой ссылки')
         if URLMap.query.filter_by(short=data['custom_id']).first() is not None:
-            raise InvalidAPIUsage(f'Имя "{data["custom_id"]}" уже занято.')
+            raise InvalidAPIUsageError(f'Имя "{data["custom_id"]}" уже занято.')
     url = URLMap()
     url.from_dict(data)
     db.session.add(url)
@@ -34,5 +34,5 @@ def add_short_url():
 def get_short_url(short_id):
     url = URLMap.query.filter_by(short=short_id).first()
     if url is None:
-        raise InvalidAPIUsage('Указанный id не найден', 404)
+        raise InvalidAPIUsageError('Указанный id не найден', 404)
     return jsonify(url.to_dict_short()), 200
