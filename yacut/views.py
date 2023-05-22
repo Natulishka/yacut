@@ -16,9 +16,12 @@ def index_view():
                 flash(f'Имя {short} уже занято!')
                 return render_template('index.html', form=form)
         else:
-            url = URLMap.query.filter_by(original=form.original_link.data).order_by(URLMap.timestamp.desc()).first()
+            url = URLMap.query.filter_by(
+                original=form.original_link.data).order_by(
+                    URLMap.timestamp.desc()).first()
             if url:
-                return render_template('index.html', form=form, short_link=url.short)
+                return render_template('index.html', form=form,
+                                       short_link=url.short)
             short = get_unique_short_id()
         url = URLMap(
             original=form.original_link.data,

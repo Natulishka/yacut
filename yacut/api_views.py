@@ -13,16 +13,22 @@ def add_short_url():
         raise InvalidAPIUsageError('Отсутствует тело запроса')
     if 'url' not in data:
         raise InvalidAPIUsageError('"url" является обязательным полем!')
-    if 'custom_id' not in data or data['custom_id'] == '' or data['custom_id'] is None:
-        url = URLMap.query.filter_by(original=data['url']).order_by(URLMap.timestamp.desc()).first()
+    if ('custom_id' not in data or data['custom_id'] == '' or
+            data['custom_id'] is None):
+        url = URLMap.query.filter_by(original=data['url']
+                                     ).order_by(URLMap.timestamp.desc()
+                                                ).first()
         if url:
             return jsonify(url.to_dict(request.host_url)), 201
         data['custom_id'] = get_unique_short_id()
     else:
         if not ckeck_url(data['custom_id']):
-            raise InvalidAPIUsageError('Указано недопустимое имя для короткой ссылки')
-        if URLMap.query.filter_by(short=data['custom_id']).first() is not None:
-            raise InvalidAPIUsageError(f'Имя "{data["custom_id"]}" уже занято.')
+            raise InvalidAPIUsageError(
+                'Указано недопустимое имя для короткой ссылки')
+        if URLMap.query.filter_by(short=data['custom_id']
+                                  ).first() is not None:
+            raise InvalidAPIUsageError(
+                f'Имя "{data["custom_id"]}" уже занято.')
     url = URLMap()
     url.from_dict(data)
     db.session.add(url)
