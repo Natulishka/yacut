@@ -7,6 +7,7 @@ from .models import URLMap
 
 
 def get_unique_short_id():
+    '''Формирует короткую ссылку.'''
     while True:
         short = ''.join(random.choice(string.ascii_letters + string.digits
                                       ) for _ in range(LEN_SHORT_ID))
@@ -15,6 +16,7 @@ def get_unique_short_id():
 
 
 def ckeck_url(url):
+    '''Проверяет предложенную пользователем короткую ссылку.'''
     if len(url) > 16:
         return False
     for char in url:
