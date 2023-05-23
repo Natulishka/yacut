@@ -1,4 +1,4 @@
-from flask import abort, flash, redirect, render_template
+from flask import flash, redirect, render_template
 
 from . import app, db
 from .forms import URLForm
@@ -35,7 +35,5 @@ def index_view():
 
 @app.route('/<string:short_id>', methods=['GET'])
 def get_url_view(short_id):
-    url = URLMap.query.filter_by(short=short_id).first()
-    if url is None:
-        abort(404)
-    return redirect(url.original)
+    return redirect(URLMap.query.filter_by(short=short_id
+                                           ).first_or_404().original)
